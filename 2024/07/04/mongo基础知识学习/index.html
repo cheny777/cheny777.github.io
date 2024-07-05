@@ -24,7 +24,7 @@
 <meta property="og:description" content="一、引言1.1 MongoDB简介什么是MongoDBMongoDB是一个开源的NoSQL数据库，由C++语言编写，旨在为WEB应用提供可扩展的高性能数据存储解决方案。MongoDB是介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。MongoDB的特点和优势MongoDB具有以下特点和优势：  高性能 丰富的数据类型 丰富的查询语言 丰富的存储引擎 丰富的索">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-07-04T12:50:07.000Z">
-<meta property="article:modified_time" content="2024-07-05T12:22:50.191Z">
+<meta property="article:modified_time" content="2024-07-05T12:39:16.094Z">
 <meta property="article:author" content="chenyu">
 <meta property="article:tag" content="mongo">
 <meta name="twitter:card" content="summary_large_image">
@@ -338,11 +338,19 @@
 <h4 id="使用查询条件-重点常用"><a href="#使用查询条件-重点常用" class="headerlink" title="使用查询条件(重点常用)"></a>使用查询条件(重点常用)</h4><h5 id="等于条件"><a href="#等于条件" class="headerlink" title="等于条件"></a>等于条件</h5><p>语法: { field: value }<br>示例: 查找 name 等于 “Alice” 的文档</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">db.<span class="hljs-property">collection</span>.<span class="hljs-title function_">find</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Alice&quot;</span> &#125;)<br></code></pre></td></tr></table></figure>
 
-<p>小于&#x2F;小于等于、大于&#x2F;大于等于</p>
-<p>语法:<br>小于: { field: { $lt: value } }<br>小于等于: { field: { $lte: value } }<br>大于: { field: { $gt: value } }<br>大于等于: { field: { $gte: value } }<br>示例: 查找年龄小于 30 的文档<br>javascript<br>复制代码<br>db.collection.find({ age: { $lt: 30 } })<br>不等于条件</p>
-<p>语法: { field: { $ne: value } }<br>示例: 查找 name 不等于 “Alice” 的文档<br>javascript<br>复制代码<br>db.collection.find({ name: { $ne: “Alice” } })<br>包含条件</p>
-<p>语法: { field: { $in: [value1, value2, …] } }<br>示例: 查找年龄是 25 或 30 的文档<br>javascript<br>复制代码<br>db.collection.find({ age: { $in: [25, 30] } })<br>不包含条件</p>
-<p>语法: { field: { $nin: [value1, value2, …] } }<br>示例: 查找年龄不是 25 或 30 的文档<br>javascript<br>复制代码<br>db.collection.find({ age: { $nin: [25, 30] } })<br>逻辑与条件</p>
+<h5 id="小于-小于等于、大于-大于等于"><a href="#小于-小于等于、大于-大于等于" class="headerlink" title="小于&#x2F;小于等于、大于&#x2F;大于等于"></a>小于&#x2F;小于等于、大于&#x2F;大于等于</h5><p>语法:<br>小于: { field: { $lt: value } }<br>小于等于: { field: { $lte: value } }<br>大于: { field: { $gt: value } }<br>大于等于: { field: { $gte: value } }<br>示例: 查找年龄小于 30 的文档</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">db.collection.find(&#123; age: &#123; $lt: 30 &#125; &#125;)<br></code></pre></td></tr></table></figure>
+
+<h5 id="不等于条件"><a href="#不等于条件" class="headerlink" title="不等于条件"></a>不等于条件</h5><p>语法: { field: { $ne: value } }<br>示例: 查找 name 不等于 “Alice” 的文档</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">db.<span class="hljs-property">collection</span>.<span class="hljs-title function_">find</span>(&#123; <span class="hljs-attr">name</span>: &#123; <span class="hljs-attr">$ne</span>: <span class="hljs-string">&quot;Alice&quot;</span> &#125; &#125;)<br></code></pre></td></tr></table></figure>
+
+<h5 id="包含条件"><a href="#包含条件" class="headerlink" title="包含条件"></a>包含条件</h5><p>语法: { field: { $in: [value1, value2, …] } }<br>示例: 查找年龄是 25 或 30 的文档</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">db.<span class="hljs-property">collection</span>.<span class="hljs-title function_">find</span>(&#123; <span class="hljs-attr">age</span>: &#123; <span class="hljs-attr">$in</span>: [<span class="hljs-number">25</span>, <span class="hljs-number">30</span>] &#125; &#125;)<br></code></pre></td></tr></table></figure>
+
+<h5 id="不包含条件"><a href="#不包含条件" class="headerlink" title="不包含条件"></a>不包含条件</h5><p>语法: { field: { $nin: [value1, value2, …] } }<br>示例: 查找年龄不是 25 或 30 的文档</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs javascript">复制代码<br>db.<span class="hljs-property">collection</span>.<span class="hljs-title function_">find</span>(&#123; <span class="hljs-attr">age</span>: &#123; <span class="hljs-attr">$nin</span>: [<span class="hljs-number">25</span>, <span class="hljs-number">30</span>] &#125; &#125;)<br></code></pre></td></tr></table></figure>
+
+<p>逻辑与条件</p>
 <p>语法: { $and: [ { condition1 }, { condition2 }, … ] }<br>示例: 查找年龄大于 25 并且 name 是 “Alice” 的文档<br>javascript<br>复制代码<br>db.collection.find({ $and: [ { age: { $gt: 25 } }, { name: “Alice” } ] })<br>逻辑或条件</p>
 <p>语法: { $or: [ { condition1 }, { condition2 }, … ] }<br>示例: 查找年龄大于 25 或 name 是 “Alice” 的文档<br>javascript<br>复制代码<br>db.collection.find({ $or: [ { age: { $gt: 25 } }, { name: “Alice” } ] })<br>存在条件</p>
 <p>语法: { field: { $exists: boolean } }<br>示例: 查找包含 address 字段的文档<br>javascript<br>复制代码<br>db.collection.find({ address: { $exists: true } })<br>正则表达式</p>
