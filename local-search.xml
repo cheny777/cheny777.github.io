@@ -17,19 +17,6 @@
   
   
   <entry>
-    <title>github+picgo搭建图床教程</title>
-    <link href="/2024/07/09/github-picgo%E6%90%AD%E5%BB%BA%E5%9B%BE%E5%BA%8A%E6%95%99%E7%A8%8B/"/>
-    <url>/2024/07/09/github-picgo%E6%90%AD%E5%BB%BA%E5%9B%BE%E5%BA%8A%E6%95%99%E7%A8%8B/</url>
-    
-    <content type="html"><![CDATA[<h2 id="1-创建github仓库"><a href="#1-创建github仓库" class="headerlink" title="1. 创建github仓库"></a>1. 创建github仓库</h2><p>登录github，创建一个仓库，名称随意，比如<code>picgo</code></p><p><img src="https://raw.githubusercontent.com/cheny777/image/main/image/20240709213447.png"></p><p>注意：选择<code>Public</code>，否则无法查看图片</p><h2 id="2-创建github-token"><a href="#2-创建github-token" class="headerlink" title="2. 创建github token"></a>2. 创建github token</h2><p>点击Settings，选择Developer settings，然后选择Personal access tokens，点击Generate new token，选择repo，点击Generate token，复制token，保存好，后面要用到<br><img src="https://raw.githubusercontent.com/cheny777/image/main/image/20240709213510.png"><br>我这里已经创建了token<br><img src="https://raw.githubusercontent.com/cheny777/image/main/image/20240709213529.png"></p><h2 id="3-配置picgo"><a href="#3-配置picgo" class="headerlink" title="3. 配置picgo"></a>3. 配置picgo</h2><p>picgo仓库地址：<a href="https://github.com/Molunerfinn/PicGo">https://github.com/Molunerfinn/PicGo</a><br>选择自己系统版本 下载并安装<br>安装完成后打开picgo，点击图床设置，选择github，填入仓库地址，token，点击保存。<br><img src="https://raw.githubusercontent.com/cheny777/image/main/image/20240709213548.png"></p><p>设置仓库名称，username&#x2F;repo<br><img src="https://raw.githubusercontent.com/cheny777/image/main/image/20240709213606.png"><br>配置完成后，点击上传图片，选择图片，点击上传，上传成功后，图片会自动上传到github仓库，然后点击查看，就可以看到图片了。</p><p><img src="https://raw.githubusercontent.com/cheny777/image/main/image/20240709213623.png"></p>]]></content>
-    
-    
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>一个简易直播软件的开发</title>
     <link href="/2024/07/05/%E4%B8%80%E4%B8%AA%E7%AE%80%E6%98%93%E7%9B%B4%E6%92%AD%E8%BD%AF%E4%BB%B6%E7%9A%84%E5%BC%80%E5%8F%91/"/>
     <url>/2024/07/05/%E4%B8%80%E4%B8%AA%E7%AE%80%E6%98%93%E7%9B%B4%E6%92%AD%E8%BD%AF%E4%BB%B6%E7%9A%84%E5%BC%80%E5%8F%91/</url>
