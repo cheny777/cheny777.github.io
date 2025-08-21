@@ -364,7 +364,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2024/07/05/%E4%B8%80%E4%B8%AA%E7%AE%80%E6%98%93%E7%9B%B4%E6%92%AD%E8%BD%AF%E4%BB%B6%E7%9A%84%E5%BC%80%E5%8F%91/" target="_self">
         <div>
-          
+          用 Go 实现的简易直播（WebRTC）——完整方案与代码下面给出一个能跑通的最小可行直播系统（MVP）：  主播端：浏览器采集音视频（getUserMedia），通过 WebRTC 推流 观众端：浏览器通过 WebRTC 拉流 后端（Go）：用 pion&#x2F;webrtc 做“轻量 SFU”，用 WebSocket 做信令 特点：跨平台、零插件、延迟低（~亚秒级），代码量小，便于二次开发
         </div>
       </a>
 
@@ -397,7 +397,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2024/07/05/%E7%BD%91%E9%A1%B5%E6%8E%A8%E6%B5%81webrtc%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E8%BD%AC%E5%8F%91/" target="_self">
         <div>
-          
+          基于 Go 的“网页推流 WebRTC 服务端 + 转发（WebRTC 订阅）”实现下面给出一个可运行的最小方案：  浏览器通过 WebRTC 推流（Publish） 到 Go 服务器。 服务器把收到的轨道转为 TrackLocal，并支持**多个订阅端（Play）**以 WebRTC 转发。 信令采用 WebSocket，纯后端+前端静态页即可跑通。 依赖 pion&#x2F;webrtc（Go
         </div>
       </a>
 
