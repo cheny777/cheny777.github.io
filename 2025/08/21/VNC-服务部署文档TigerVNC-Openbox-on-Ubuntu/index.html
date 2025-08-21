@@ -1,0 +1,651 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/chenyu.jpeg">
+  <link rel="icon" href="/img/chenyu.jpeg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="chenyu">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="VNC 服务部署文档（TigerVNC + Openbox on Ubuntu）1. 概述本文档提供在 Ubuntu 系统上使用 TigerVNC + Openbox 的轻量级 VNC 服务部署方案。 2. 环境准备2.1 系统要求 操作系统：Ubuntu 20.04&#x2F;22.04 用户权限：sudo 权限 网络：开放 VNC 端口（默认 5901+）  2.2 安装依赖bashsudo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VNC 服务部署文档（TigerVNC + Openbox on Ubuntu)">
+<meta property="og:url" content="https://cheny777.github.io/2025/08/21/VNC-%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3TigerVNC-Openbox-on-Ubuntu/index.html">
+<meta property="og:site_name" content="chenyu的博客">
+<meta property="og:description" content="VNC 服务部署文档（TigerVNC + Openbox on Ubuntu）1. 概述本文档提供在 Ubuntu 系统上使用 TigerVNC + Openbox 的轻量级 VNC 服务部署方案。 2. 环境准备2.1 系统要求 操作系统：Ubuntu 20.04&#x2F;22.04 用户权限：sudo 权限 网络：开放 VNC 端口（默认 5901+）  2.2 安装依赖bashsudo">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-21T03:24:17.000Z">
+<meta property="article:modified_time" content="2025-08-21T03:32:49.027Z">
+<meta property="article:author" content="chenyu">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>VNC 服务部署文档（TigerVNC + Openbox on Ubuntu) - chenyu的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"cheny777.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>chenyu的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="VNC 服务部署文档（TigerVNC + Openbox on Ubuntu)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-21 11:24" pubdate>
+          2025年8月21日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          432 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          4 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">VNC 服务部署文档（TigerVNC + Openbox on Ubuntu)</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="VNC-服务部署文档（TigerVNC-Openbox-on-Ubuntu）"><a href="#VNC-服务部署文档（TigerVNC-Openbox-on-Ubuntu）" class="headerlink" title="VNC 服务部署文档（TigerVNC + Openbox on Ubuntu）"></a>VNC 服务部署文档（TigerVNC + Openbox on Ubuntu）</h1><h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p>本文档提供在 Ubuntu 系统上使用 <strong>TigerVNC + Openbox</strong> 的轻量级 VNC 服务部署方案。</p>
+<h2 id="2-环境准备"><a href="#2-环境准备" class="headerlink" title="2. 环境准备"></a>2. 环境准备</h2><h3 id="2-1-系统要求"><a href="#2-1-系统要求" class="headerlink" title="2.1 系统要求"></a>2.1 系统要求</h3><ul>
+<li><strong>操作系统</strong>：Ubuntu 20.04&#x2F;22.04</li>
+<li><strong>用户权限</strong>：<code>sudo</code> 权限</li>
+<li><strong>网络</strong>：开放 VNC 端口（默认 <code>5901</code>+）</li>
+</ul>
+<h3 id="2-2-安装依赖"><a href="#2-2-安装依赖" class="headerlink" title="2.2 安装依赖"></a>2.2 安装依赖</h3><p>bash<br>sudo apt update<br>sudo apt install tigervnc-standalone-server tigervnc-common openbox obconf -y</p>
+<h2 id="3-安装与配置"><a href="#3-安装与配置" class="headerlink" title="3. 安装与配置"></a>3. 安装与配置</h2><h3 id="3-1-设置-VNC-密码"><a href="#3-1-设置-VNC-密码" class="headerlink" title="3.1 设置 VNC 密码"></a>3.1 设置 VNC 密码</h3><p>bash<br>vncpasswd</p>
+<h3 id="3-2-配置-Openbox-启动脚本"><a href="#3-2-配置-Openbox-启动脚本" class="headerlink" title="3.2 配置 Openbox 启动脚本"></a>3.2 配置 Openbox 启动脚本</h3><p>bash<br>mkdir -p ~&#x2F;.vnc<br>cat &gt; ~&#x2F;.vnc&#x2F;xstartup &lt;&lt;’EOF’<br>!&#x2F;bin&#x2F;bash</p>
+<p>unset SESSION_MANAGER<br>unset DBUS_SESSION_BUS_ADDRESS<br>exec openbox-session &amp;<br>lxterminal &amp;  # 可选<br>tint2 &amp;       # 可选<br>EOF<br>chmod +x ~&#x2F;.vnc&#x2F;xstartup</p>
+<h3 id="3-3-启动临时会话"><a href="#3-3-启动临时会话" class="headerlink" title="3.3 启动临时会话"></a>3.3 启动临时会话</h3><p>bash<br>vncserver :1 -geometry 1920x1080 -depth 24 -rfbport 5901 -xstartup ~&#x2F;.vnc&#x2F;xstartup</p>
+<h2 id="4-系统服务配置"><a href="#4-系统服务配置" class="headerlink" title="4. 系统服务配置"></a>4. 系统服务配置</h2><h3 id="4-1-创建-systemd-服务"><a href="#4-1-创建-systemd-服务" class="headerlink" title="4.1 创建 systemd 服务"></a>4.1 创建 systemd 服务</h3><p>bash<br>sudo nano &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;vncserver@.service</p>
+<p>粘贴以下内容：<br>ini<br>[Unit]<br>Description&#x3D;TigerVNC Server (:%i)<br>After&#x3D;syslog.target network.target</p>
+<p>[Service]<br>Type&#x3D;simple<br>User&#x3D;<USER><br>WorkingDirectory&#x3D;&#x2F;home&#x2F;<USER><br>ExecStart&#x3D;&#x2F;usr&#x2F;bin&#x2F;vncserver :%i -geometry 1920x1080 -depth 24 -rfbport 590%i -localhost no -xstartup &#x2F;home&#x2F;<USER>&#x2F;.vnc&#x2F;xstartup<br>ExecStop&#x3D;&#x2F;usr&#x2F;bin&#x2F;vncserver -kill :%i<br>Restart&#x3D;on-failure</p>
+<p>[Install]<br>WantedBy&#x3D;multi-user.target</p>
+<h3 id="4-2-启用服务"><a href="#4-2-启用服务" class="headerlink" title="4.2 启用服务"></a>4.2 启用服务</h3><p>bash<br>sudo systemctl daemon-reload<br>sudo systemctl start <a href="mailto:&#118;&#x6e;&#x63;&#115;&#x65;&#x72;&#118;&#x65;&#114;&#x40;&#49;&#x2e;&#115;&#101;&#114;&#118;&#x69;&#99;&#101;">&#118;&#x6e;&#x63;&#115;&#x65;&#x72;&#118;&#x65;&#114;&#x40;&#49;&#x2e;&#115;&#101;&#114;&#118;&#x69;&#99;&#101;</a><br>sudo systemctl enable <a href="mailto:&#x76;&#110;&#x63;&#115;&#101;&#x72;&#118;&#101;&#x72;&#64;&#49;&#46;&#115;&#101;&#x72;&#118;&#x69;&#99;&#101;">&#x76;&#110;&#x63;&#115;&#101;&#x72;&#118;&#101;&#x72;&#64;&#49;&#46;&#115;&#101;&#x72;&#118;&#x69;&#99;&#101;</a></p>
+<h2 id="5-防火墙与安全"><a href="#5-防火墙与安全" class="headerlink" title="5. 防火墙与安全"></a>5. 防火墙与安全</h2><h3 id="5-1-开放端口"><a href="#5-1-开放端口" class="headerlink" title="5.1 开放端口"></a>5.1 开放端口</h3><p>bash<br>sudo ufw allow 5901&#x2F;tcp<br>sudo ufw reload</p>
+<h2 id="6-连接测试"><a href="#6-连接测试" class="headerlink" title="6. 连接测试"></a>6. 连接测试</h2><p>使用 VNC 客户端连接：</p>
+<ul>
+<li><strong>地址</strong>：<code>&lt;服务器IP&gt;:5901</code></li>
+<li><strong>密码</strong>：<code>vncpasswd</code> 设置的密码</li>
+</ul>
+<h2 id="7-常见问题排查"><a href="#7-常见问题排查" class="headerlink" title="7. 常见问题排查"></a>7. 常见问题排查</h2><h3 id="7-1-Openbox-未启动"><a href="#7-1-Openbox-未启动" class="headerlink" title="7.1 Openbox 未启动"></a>7.1 Openbox 未启动</h3><p>bash<br>which openbox-session<br>sudo apt install –reinstall openbox obconf</p>
+<h2 id="8-卸载-VNC"><a href="#8-卸载-VNC" class="headerlink" title="8. 卸载 VNC"></a>8. 卸载 VNC</h2><p>bash<br>sudo systemctl stop <a href="mailto:&#118;&#110;&#99;&#x73;&#x65;&#114;&#118;&#101;&#x72;&#x40;&#x31;&#46;&#115;&#x65;&#x72;&#118;&#105;&#99;&#101;">&#118;&#110;&#99;&#x73;&#x65;&#114;&#118;&#101;&#x72;&#x40;&#x31;&#46;&#115;&#x65;&#x72;&#118;&#105;&#99;&#101;</a><br>sudo systemctl disable <a href="mailto:&#x76;&#x6e;&#99;&#x73;&#x65;&#114;&#x76;&#101;&#114;&#x40;&#x31;&#46;&#x73;&#x65;&#x72;&#118;&#x69;&#99;&#x65;">&#x76;&#x6e;&#99;&#x73;&#x65;&#114;&#x76;&#101;&#114;&#x40;&#x31;&#46;&#x73;&#x65;&#x72;&#118;&#x69;&#99;&#x65;</a><br>sudo rm &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;vncserver@.service<br>sudo apt remove tigervnc-standalone-server openbox -y<br>rm -rf ~&#x2F;.vnc</p>
+<h2 id="9-附录"><a href="#9-附录" class="headerlink" title="9. 附录"></a>9. 附录</h2><h3 id="9-1-常用命令"><a href="#9-1-常用命令" class="headerlink" title="9.1 常用命令"></a>9.1 常用命令</h3><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>启动会话</td>
+<td><code>vncserver :1 -geometry 1920x1080</code></td>
+</tr>
+<tr>
+<td>关闭会话</td>
+<td><code>vncserver -kill :1</code></td>
+</tr>
+</tbody></table>
+<p><strong>文档版本</strong>：1.1<br><strong>最后更新</strong>：2025-08-21</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>VNC 服务部署文档（TigerVNC + Openbox on Ubuntu)</div>
+      <div>https://cheny777.github.io/2025/08/21/VNC-服务部署文档TigerVNC-Openbox-on-Ubuntu/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>chenyu</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/10/%E4%B8%80%E5%8F%A3%E6%B0%94%E5%86%99%E5%AE%8CC%E8%AF%AD%E8%A8%80%E4%BE%8B%E5%AD%90/" title="一口气写完C语言例子">
+                        <span class="hidden-mobile">一口气写完C语言例子</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
