@@ -16,13 +16,15 @@
   <meta name="author" content="chenyu">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="MySQL 基础知识学习1. MySQL 简介 MySQL 是一个开源的关系型数据库管理系统（RDBMS）。  使用 SQL（Structured Query Language，结构化查询语言） 来管理数据库。  特点：  开源免费 跨平台 支持大规模数据存储 广泛应用于 Web 开发     2. 数据库基本概念 数据库（Database）：存放数据的仓库。 表（Table）：数据库中的基本存储">
+<meta property="og:type" content="article">
 <meta property="og:title" content="mysql基础知识学习">
 <meta property="og:url" content="https://cheny777.github.io/2024/07/04/mysql%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="chenyu的博客">
+<meta property="og:description" content="MySQL 基础知识学习1. MySQL 简介 MySQL 是一个开源的关系型数据库管理系统（RDBMS）。  使用 SQL（Structured Query Language，结构化查询语言） 来管理数据库。  特点：  开源免费 跨平台 支持大规模数据存储 广泛应用于 Web 开发     2. 数据库基本概念 数据库（Database）：存放数据的仓库。 表（Table）：数据库中的基本存储">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-07-04T13:07:57.000Z">
-<meta property="article:modified_time" content="2025-08-21T03:22:15.477Z">
+<meta property="article:modified_time" content="2025-08-22T03:51:03.068Z">
 <meta property="article:author" content="chenyu">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -217,7 +219,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          698 字
         
       </span>
     
@@ -228,7 +230,7 @@
         
         
         
-          1 分钟
+          6 分钟
         
       </span>
     
@@ -270,7 +272,107 @@
             
               <div class="markdown-body">
                 
-                
+                <h1 id="MySQL-基础知识学习"><a href="#MySQL-基础知识学习" class="headerlink" title="MySQL 基础知识学习"></a>MySQL 基础知识学习</h1><h2 id="1-MySQL-简介"><a href="#1-MySQL-简介" class="headerlink" title="1. MySQL 简介"></a>1. MySQL 简介</h2><ul>
+<li><p><strong>MySQL</strong> 是一个开源的关系型数据库管理系统（RDBMS）。</p>
+</li>
+<li><p>使用 <strong>SQL（Structured Query Language，结构化查询语言）</strong> 来管理数据库。</p>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>开源免费</li>
+<li>跨平台</li>
+<li>支持大规模数据存储</li>
+<li>广泛应用于 Web 开发</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="2-数据库基本概念"><a href="#2-数据库基本概念" class="headerlink" title="2. 数据库基本概念"></a>2. 数据库基本概念</h2><ul>
+<li><strong>数据库（Database）</strong>：存放数据的仓库。</li>
+<li><strong>表（Table）</strong>：数据库中的基本存储单位，类似 Excel 表格。</li>
+<li><strong>行（Row &#x2F; Record）</strong>：表中的一条数据。</li>
+<li><strong>列（Column &#x2F; Field）</strong>：表中的一个字段。</li>
+<li><strong>主键（Primary Key）</strong>：唯一标识一条记录。</li>
+<li><strong>外键（Foreign Key）</strong>：表与表之间的关联。</li>
+</ul>
+<hr>
+<h2 id="3-常用-SQL-分类"><a href="#3-常用-SQL-分类" class="headerlink" title="3. 常用 SQL 分类"></a>3. 常用 SQL 分类</h2><ul>
+<li><p><strong>DDL（Data Definition Language，数据定义语言）</strong></p>
+<ul>
+<li>创建、修改、删除数据库和表</li>
+</ul>
+</li>
+<li><p><strong>DML（Data Manipulation Language，数据操作语言）</strong></p>
+<ul>
+<li>插入、更新、删除数据</li>
+</ul>
+</li>
+<li><p><strong>DQL（Data Query Language，数据查询语言）</strong></p>
+<ul>
+<li>查询数据</li>
+</ul>
+</li>
+<li><p><strong>DCL（Data Control Language，数据控制语言）</strong></p>
+<ul>
+<li>用户权限管理</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="4-常用命令"><a href="#4-常用命令" class="headerlink" title="4. 常用命令"></a>4. 常用命令</h2><h3 id="4-1-数据库操作"><a href="#4-1-数据库操作" class="headerlink" title="4.1 数据库操作"></a>4.1 数据库操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查看所有数据库</span><br><span class="hljs-keyword">SHOW</span> DATABASES;<br><br><span class="hljs-comment">-- 创建数据库</span><br><span class="hljs-keyword">CREATE</span> DATABASE test_db;<br><br><span class="hljs-comment">-- 删除数据库</span><br><span class="hljs-keyword">DROP</span> DATABASE test_db;<br><br><span class="hljs-comment">-- 使用数据库</span><br>USE test_db;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-2-表操作"><a href="#4-2-表操作" class="headerlink" title="4.2 表操作"></a>4.2 表操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查看当前数据库中的表</span><br><span class="hljs-keyword">SHOW</span> TABLES;<br><br><span class="hljs-comment">-- 创建表</span><br><span class="hljs-keyword">CREATE TABLE</span> users (<br>    id <span class="hljs-type">INT</span> AUTO_INCREMENT <span class="hljs-keyword">PRIMARY KEY</span>,<br>    name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">NOT NULL</span>,<br>    age <span class="hljs-type">INT</span>,<br>    email <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>)<br>);<br><br><span class="hljs-comment">-- 查看表结构</span><br><span class="hljs-keyword">DESC</span> users;<br><br><span class="hljs-comment">-- 删除表</span><br><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> users;<br><br><span class="hljs-comment">-- 修改表：添加列</span><br><span class="hljs-keyword">ALTER TABLE</span> users <span class="hljs-keyword">ADD</span> <span class="hljs-keyword">COLUMN</span> gender <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">10</span>);<br><br><span class="hljs-comment">-- 修改表：删除列</span><br><span class="hljs-keyword">ALTER TABLE</span> users <span class="hljs-keyword">DROP</span> <span class="hljs-keyword">COLUMN</span> gender;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-3-数据操作（DML）"><a href="#4-3-数据操作（DML）" class="headerlink" title="4.3 数据操作（DML）"></a>4.3 数据操作（DML）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 插入数据</span><br><span class="hljs-keyword">INSERT INTO</span> users (name, age, email) <span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;Tom&#x27;</span>, <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;tom@example.com&#x27;</span>);<br><br><span class="hljs-comment">-- 更新数据</span><br><span class="hljs-keyword">UPDATE</span> users <span class="hljs-keyword">SET</span> age <span class="hljs-operator">=</span> <span class="hljs-number">21</span> <span class="hljs-keyword">WHERE</span> name <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Tom&#x27;</span>;<br><br><span class="hljs-comment">-- 删除数据</span><br><span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> name <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Tom&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-4-数据查询（DQL）"><a href="#4-4-数据查询（DQL）" class="headerlink" title="4.4 数据查询（DQL）"></a>4.4 数据查询（DQL）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 查询所有数据</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users;<br><br><span class="hljs-comment">-- 查询指定列</span><br><span class="hljs-keyword">SELECT</span> name, age <span class="hljs-keyword">FROM</span> users;<br><br><span class="hljs-comment">-- 条件查询</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> age <span class="hljs-operator">&gt;</span> <span class="hljs-number">18</span>;<br><br><span class="hljs-comment">-- 排序</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> age <span class="hljs-keyword">DESC</span>;<br><br><span class="hljs-comment">-- 限制返回条数</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users LIMIT <span class="hljs-number">5</span>;<br><br><span class="hljs-comment">-- 分组统计</span><br><span class="hljs-keyword">SELECT</span> age, <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> age;<br><br><span class="hljs-comment">-- 聚合函数</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">AVG</span>(age), <span class="hljs-built_in">MAX</span>(age), <span class="hljs-built_in">MIN</span>(age), <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> users;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-主键-外键"><a href="#5-主键-外键" class="headerlink" title="5. 主键 &amp; 外键"></a>5. 主键 &amp; 外键</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 主键：唯一标识一条记录</span><br><span class="hljs-keyword">CREATE TABLE</span> departments (<br>    dept_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY KEY</span> AUTO_INCREMENT,<br>    dept_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">NOT NULL</span><br>);<br><br><span class="hljs-comment">-- 外键：用于表之间的关联</span><br><span class="hljs-keyword">CREATE TABLE</span> employees (<br>    emp_id <span class="hljs-type">INT</span> <span class="hljs-keyword">PRIMARY KEY</span> AUTO_INCREMENT,<br>    emp_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>),<br>    dept_id <span class="hljs-type">INT</span>,<br>    <span class="hljs-keyword">FOREIGN KEY</span> (dept_id) <span class="hljs-keyword">REFERENCES</span> departments(dept_id)<br>);<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-索引"><a href="#6-索引" class="headerlink" title="6. 索引"></a>6. 索引</h2><ul>
+<li><strong>索引（Index）</strong>：加快查询速度的机制，类似书本目录。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 创建索引</span><br><span class="hljs-keyword">CREATE</span> INDEX idx_name <span class="hljs-keyword">ON</span> users(name);<br><br><span class="hljs-comment">-- 删除索引</span><br><span class="hljs-keyword">DROP</span> INDEX idx_name <span class="hljs-keyword">ON</span> users;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-用户与权限"><a href="#7-用户与权限" class="headerlink" title="7. 用户与权限"></a>7. 用户与权限</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 创建用户</span><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">USER</span> <span class="hljs-string">&#x27;user1&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED <span class="hljs-keyword">BY</span> <span class="hljs-string">&#x27;password&#x27;</span>;<br><br><span class="hljs-comment">-- 授权</span><br><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">ALL</span> PRIVILEGES <span class="hljs-keyword">ON</span> test_db.<span class="hljs-operator">*</span> <span class="hljs-keyword">TO</span> <span class="hljs-string">&#x27;user1&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>;<br><br><span class="hljs-comment">-- 查看权限</span><br><span class="hljs-keyword">SHOW</span> GRANTS <span class="hljs-keyword">FOR</span> <span class="hljs-string">&#x27;user1&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>;<br><br><span class="hljs-comment">-- 撤销权限</span><br><span class="hljs-keyword">REVOKE</span> <span class="hljs-keyword">ALL</span> PRIVILEGES <span class="hljs-keyword">ON</span> test_db.<span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> <span class="hljs-string">&#x27;user1&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>;<br><br><span class="hljs-comment">-- 删除用户</span><br><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">USER</span> <span class="hljs-string">&#x27;user1&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="8-常见数据类型"><a href="#8-常见数据类型" class="headerlink" title="8. 常见数据类型"></a>8. 常见数据类型</h2><ul>
+<li><strong>整数类型</strong>：<code>TINYINT, SMALLINT, INT, BIGINT</code></li>
+<li><strong>浮点类型</strong>：<code>FLOAT, DOUBLE, DECIMAL</code></li>
+<li><strong>字符串类型</strong>：<code>CHAR, VARCHAR, TEXT</code></li>
+<li><strong>日期时间类型</strong>：<code>DATE, TIME, DATETIME, TIMESTAMP</code></li>
+</ul>
+<hr>
+<h2 id="9-实用技巧"><a href="#9-实用技巧" class="headerlink" title="9. 实用技巧"></a>9. 实用技巧</h2><ul>
+<li><p><strong>模糊查询</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> name <span class="hljs-keyword">LIKE</span> <span class="hljs-string">&#x27;T%&#x27;</span>;<br></code></pre></td></tr></table></figure></li>
+<li><p><strong>去重</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">DISTINCT</span> age <span class="hljs-keyword">FROM</span> users;<br></code></pre></td></tr></table></figure></li>
+<li><p><strong>联合查询</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> users<br><span class="hljs-keyword">UNION</span><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> employees;<br></code></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h2 id="10-常见问题"><a href="#10-常见问题" class="headerlink" title="10. 常见问题"></a>10. 常见问题</h2><ol>
+<li><p><strong>MySQL 区分大小写吗？</strong></p>
+<ul>
+<li>Windows：不区分大小写</li>
+<li>Linux：区分大小写（表名、数据库名）</li>
+</ul>
+</li>
+<li><p><strong>NULL 和空字符串的区别？</strong></p>
+<ul>
+<li><code>NULL</code> 表示没有值</li>
+<li><code>&#39;&#39;</code> 表示值为空</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>要不要我帮你整理成一份 <strong>学习路线图（从基础到进阶）</strong>，方便你循序渐进学习？</p>
+
                 
               </div>
             

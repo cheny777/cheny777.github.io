@@ -16,13 +16,15 @@
   <meta name="author" content="chenyu">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="1. 架构选型与推荐拓扑1.1 副本集（Replica Set） 最小生产推荐：3 个数据节点（1 Primary + 2 Secondary），奇数投票。  可选：  Hidden 隐藏节点（只备份&#x2F;报表） Delayed 延迟节点（用于回滚防护，如延迟 1–24h） 不再推荐仲裁节点（Arbiter）——除非存储资源极端受限。    示意 123Client ──&gt; Prima">
+<meta property="og:type" content="article">
 <meta property="og:title" content="mongo集群搭建与异常恢复">
 <meta property="og:url" content="https://cheny777.github.io/2024/07/04/mongo%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%BC%82%E5%B8%B8%E6%81%A2%E5%A4%8D/index.html">
 <meta property="og:site_name" content="chenyu的博客">
+<meta property="og:description" content="1. 架构选型与推荐拓扑1.1 副本集（Replica Set） 最小生产推荐：3 个数据节点（1 Primary + 2 Secondary），奇数投票。  可选：  Hidden 隐藏节点（只备份&#x2F;报表） Delayed 延迟节点（用于回滚防护，如延迟 1–24h） 不再推荐仲裁节点（Arbiter）——除非存储资源极端受限。    示意 123Client ──&gt; Prima">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-07-04T13:01:55.000Z">
-<meta property="article:modified_time" content="2025-08-21T03:22:15.476Z">
+<meta property="article:modified_time" content="2025-08-22T03:52:31.884Z">
 <meta property="article:author" content="chenyu">
 <meta property="article:tag" content="mongo">
 <meta name="twitter:card" content="summary_large_image">
@@ -218,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          2.2k 字
         
       </span>
     
@@ -229,7 +231,7 @@
         
         
         
-          1 分钟
+          19 分钟
         
       </span>
     
@@ -271,7 +273,183 @@
             
               <div class="markdown-body">
                 
-                
+                <h2 id="1-架构选型与推荐拓扑"><a href="#1-架构选型与推荐拓扑" class="headerlink" title="1. 架构选型与推荐拓扑"></a>1. 架构选型与推荐拓扑</h2><h3 id="1-1-副本集（Replica-Set）"><a href="#1-1-副本集（Replica-Set）" class="headerlink" title="1.1 副本集（Replica Set）"></a>1.1 副本集（Replica Set）</h3><ul>
+<li><p><strong>最小生产推荐</strong>：3 个数据节点（1 Primary + 2 Secondary），奇数投票。</p>
+</li>
+<li><p>可选：</p>
+<ul>
+<li><code>Hidden</code> 隐藏节点（只备份&#x2F;报表）</li>
+<li><code>Delayed</code> 延迟节点（用于回滚防护，如延迟 1–24h）</li>
+<li><strong>不再推荐</strong>仲裁节点（Arbiter）——除非存储资源极端受限。</li>
+</ul>
+</li>
+</ul>
+<p><strong>示意</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Client ──&gt; Primary (<span class="hljs-attribute">Votes</span>=1, Priority高)<br>          Secondary (<span class="hljs-attribute">Votes</span>=1)<br>          Secondary (<span class="hljs-attribute">Votes</span>=1, Hidden/Delayed 可选)<br></code></pre></td></tr></table></figure>
+
+<h3 id="1-2-分片集群（Sharded-Cluster）"><a href="#1-2-分片集群（Sharded-Cluster）" class="headerlink" title="1.2 分片集群（Sharded Cluster）"></a>1.2 分片集群（Sharded Cluster）</h3><ul>
+<li>组件：<code>mongos</code> 路由 + <code>Config Server Replica Set (CSRS)</code> 3 节点 + 多个<strong>分片</strong>（每个分片是一个副本集）。</li>
+<li>适用：数据量&#x2F;并发量较大，需要水平扩展或不同数据域拆分。</li>
+</ul>
+<p><strong>示意</strong></p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-variable">clients</span> → <span class="hljs-variable">mongos</span> ─→ <span class="hljs-variable">shardA</span>: <span class="hljs-function"><span class="hljs-title">RS</span>(<span class="hljs-number">3</span>) </span><br><span class="hljs-function">                 └→ <span class="hljs-variable">shardB</span>: <span class="hljs-title">RS</span>(<span class="hljs-number">3</span>)</span><br>           ↑<br>           └→ <span class="hljs-variable">config</span> <span class="hljs-function"><span class="hljs-title">RS</span>(<span class="hljs-number">3</span>)</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="2-环境准备"><a href="#2-环境准备" class="headerlink" title="2. 环境准备"></a>2. 环境准备</h2><ul>
+<li>OS：x86_64 Linux（CentOS &#x2F; RHEL &#x2F; Ubuntu 等）</li>
+<li>目录：<code>/data/mongo/&#123;rsX&#125;/db</code>, <code>/data/mongo/&#123;rsX&#125;/log</code></li>
+<li>时钟同步：<code>chrony</code> &#x2F; <code>ntp</code></li>
+<li>句柄与进程数：<code>/etc/security/limits.conf</code></li>
+<li>关闭透明大页（THP）、保持 <code>numactl</code> 合理策略</li>
+<li>打开 TCP：27017（mongod）、27018（config）、27019（mongos，任选），并限制安全组</li>
+<li><strong>持久化</strong>：ext4&#x2F;xfs，关掉磁盘写缓存欺骗，RAID 带缓存需电池保护</li>
+<li><strong>内存与缓存</strong>：WiredTiger 缓存默认约为内存的 50%；可用 <code>storage.wiredTiger.engineConfig.cacheSizeGB</code> 调整</li>
+</ul>
+<hr>
+<h2 id="3-安装与基础配置"><a href="#3-安装与基础配置" class="headerlink" title="3. 安装与基础配置"></a>3. 安装与基础配置</h2><h3 id="3-1-安装（以-tgz-举例）"><a href="#3-1-安装（以-tgz-举例）" class="headerlink" title="3.1 安装（以 tgz 举例）"></a>3.1 安装（以 tgz 举例）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 下载并解压至 /opt/mongodb</span><br>tar -zxvf mongodb-linux-x86_64-*.tgz -C /opt/<br><span class="hljs-built_in">ln</span> -s /opt/mongodb-linux-x86_64-*/bin /usr/local/mongodb<br><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;export PATH=/usr/local/mongodb:$PATH&#x27;</span> &gt;&gt; /etc/profile<br><span class="hljs-built_in">source</span> /etc/profile<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-生成集群密钥文件（副本集-分片都需要）"><a href="#3-2-生成集群密钥文件（副本集-分片都需要）" class="headerlink" title="3.2 生成集群密钥文件（副本集&#x2F;分片都需要）"></a>3.2 生成集群密钥文件（副本集&#x2F;分片都需要）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">openssl rand -<span class="hljs-built_in">base64</span> 756 &gt; /etc/mongo-keyfile<br><span class="hljs-built_in">chmod</span> 600 /etc/mongo-keyfile<br><span class="hljs-built_in">chown</span> mongod:mongod /etc/mongo-keyfile<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-3-副本集节点-mongod-conf-示例"><a href="#3-3-副本集节点-mongod-conf-示例" class="headerlink" title="3.3 副本集节点 mongod.conf 示例"></a>3.3 副本集节点 <code>mongod.conf</code> 示例</h3><p><code>/etc/mongod-rs1-27017.conf</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">storage:</span><br>  <span class="hljs-attr">dbPath:</span> <span class="hljs-string">/data/mongo/rs1/db</span><br>  <span class="hljs-attr">journal:</span><br>    <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span><br>  <span class="hljs-attr">wiredTiger:</span><br>    <span class="hljs-attr">engineConfig:</span><br>      <span class="hljs-attr">cacheSizeGB:</span> <span class="hljs-number">16</span>        <span class="hljs-comment"># 视内存而定</span><br><span class="hljs-attr">systemLog:</span><br>  <span class="hljs-attr">destination:</span> <span class="hljs-string">file</span><br>  <span class="hljs-attr">path:</span> <span class="hljs-string">/data/mongo/rs1/log/mongod.log</span><br>  <span class="hljs-attr">logAppend:</span> <span class="hljs-literal">true</span><br><span class="hljs-attr">net:</span><br>  <span class="hljs-attr">bindIp:</span> <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span><br>  <span class="hljs-attr">port:</span> <span class="hljs-number">27017</span><br><span class="hljs-attr">security:</span><br>  <span class="hljs-attr">authorization:</span> <span class="hljs-string">enabled</span><br>  <span class="hljs-attr">keyFile:</span> <span class="hljs-string">/etc/mongo-keyfile</span><br><span class="hljs-attr">replication:</span><br>  <span class="hljs-attr">replSetName:</span> <span class="hljs-string">rs1</span><br>  <span class="hljs-attr">oplogSizeMB:</span> <span class="hljs-number">20480</span>        <span class="hljs-comment"># 足够的 oplog（&gt;= 20GB，按写入速率评估）</span><br><span class="hljs-attr">processManagement:</span><br>  <span class="hljs-attr">fork:</span> <span class="hljs-literal">true</span><br><span class="hljs-attr">setParameter:</span><br>  <span class="hljs-attr">enableLocalhostAuthBypass:</span> <span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
+
+<p>启动（每台机器各自启动一个同名 <code>rs1</code> 节点）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">mongod -f /etc/mongod-rs1-27017.conf<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-4-初始化副本集"><a href="#3-4-初始化副本集" class="headerlink" title="3.4 初始化副本集"></a>3.4 初始化副本集</h3><p>在任意节点 <code>mongo</code> 连接后：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript">rs.<span class="hljs-title function_">initiate</span>(&#123;<br>  <span class="hljs-attr">_id</span>: <span class="hljs-string">&quot;rs1&quot;</span>,<br>  <span class="hljs-attr">members</span>: [<br>    &#123; <span class="hljs-attr">_id</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;host1:27017&quot;</span>, <span class="hljs-attr">priority</span>: <span class="hljs-number">2</span> &#125;,<br>    &#123; <span class="hljs-attr">_id</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;host2:27017&quot;</span>, <span class="hljs-attr">priority</span>: <span class="hljs-number">1</span> &#125;,<br>    &#123; <span class="hljs-attr">_id</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;host3:27017&quot;</span>, <span class="hljs-attr">priority</span>: <span class="hljs-number">1</span> &#125;<br>  ]<br>&#125;)<br>rs.<span class="hljs-title function_">status</span>()<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-5-创建管理员账户"><a href="#3-5-创建管理员账户" class="headerlink" title="3.5 创建管理员账户"></a>3.5 创建管理员账户</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs javascript">use admin<br>db.<span class="hljs-title function_">createUser</span>(&#123;<br>  <span class="hljs-attr">user</span>: <span class="hljs-string">&quot;root&quot;</span>,<br>  <span class="hljs-attr">pwd</span>:  <span class="hljs-string">&quot;StrongPass#2025&quot;</span>,<br>  <span class="hljs-attr">roles</span>: [ &#123; <span class="hljs-attr">role</span>: <span class="hljs-string">&quot;root&quot;</span>, <span class="hljs-attr">db</span>: <span class="hljs-string">&quot;admin&quot;</span> &#125; ]<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>随后使用 <code>mongo -u root -p --authenticationDatabase admin</code> 登录。</p>
+<hr>
+<h2 id="4-搭建分片集群（可选）"><a href="#4-搭建分片集群（可选）" class="headerlink" title="4. 搭建分片集群（可选）"></a>4. 搭建分片集群（可选）</h2><h3 id="4-1-配置服务器-CSRS（3-节点）"><a href="#4-1-配置服务器-CSRS（3-节点）" class="headerlink" title="4.1 配置服务器 CSRS（3 节点）"></a>4.1 配置服务器 CSRS（3 节点）</h3><p><code>/etc/mongod-cfg.conf</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">net:</span> &#123; <span class="hljs-attr">bindIp:</span> <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>, <span class="hljs-attr">port:</span> <span class="hljs-number">27018</span> &#125;<br><span class="hljs-attr">storage:</span> &#123; <span class="hljs-attr">dbPath:</span> <span class="hljs-string">/data/mongo/cfg/db</span>, <span class="hljs-attr">journal:</span> &#123; <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span> &#125; &#125;<br><span class="hljs-attr">systemLog:</span> &#123; <span class="hljs-attr">destination:</span> <span class="hljs-string">file</span>, <span class="hljs-attr">path:</span> <span class="hljs-string">/data/mongo/cfg/log/cfg.log</span>, <span class="hljs-attr">logAppend:</span> <span class="hljs-literal">true</span> &#125;<br><span class="hljs-attr">processManagement:</span> &#123; <span class="hljs-attr">fork:</span> <span class="hljs-literal">true</span> &#125;<br><span class="hljs-attr">replication:</span> &#123; <span class="hljs-attr">replSetName:</span> <span class="hljs-string">&quot;cfgRS&quot;</span> &#125;<br><span class="hljs-attr">sharding:</span> &#123; <span class="hljs-attr">clusterRole:</span> <span class="hljs-string">&quot;configsvr&quot;</span> &#125;<br><span class="hljs-attr">security:</span> &#123; <span class="hljs-attr">authorization:</span> <span class="hljs-string">enabled</span>, <span class="hljs-attr">keyFile:</span> <span class="hljs-string">/etc/mongo-keyfile</span> &#125;<br></code></pre></td></tr></table></figure>
+
+<p>三台分别启动并在其中一台初始化：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript">rs.<span class="hljs-title function_">initiate</span>(&#123;<br>  <span class="hljs-attr">_id</span>: <span class="hljs-string">&quot;cfgRS&quot;</span>,<br>  <span class="hljs-attr">configsvr</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-attr">members</span>: [<br>    &#123; <span class="hljs-attr">_id</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;cfg1:27018&quot;</span> &#125;,<br>    &#123; <span class="hljs-attr">_id</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;cfg2:27018&quot;</span> &#125;,<br>    &#123; <span class="hljs-attr">_id</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;cfg3:27018&quot;</span> &#125;<br>  ]<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-2-每个分片-一个副本集"><a href="#4-2-每个分片-一个副本集" class="headerlink" title="4.2 每个分片&#x3D;一个副本集"></a>4.2 每个分片&#x3D;一个副本集</h3><p>为 <code>shard01</code>、<code>shard02</code> 分别按 <strong>第 3 节</strong> 步骤搭建 <code>rs_shard01</code>&#x2F;<code>rs_shard02</code>。</p>
+<h3 id="4-3-启动-mongos-路由"><a href="#4-3-启动-mongos-路由" class="headerlink" title="4.3 启动 mongos 路由"></a>4.3 启动 <code>mongos</code> 路由</h3><p><code>/etc/mongos.conf</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">net:</span> &#123; <span class="hljs-attr">bindIp:</span> <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>, <span class="hljs-attr">port:</span> <span class="hljs-number">27019</span> &#125;<br><span class="hljs-attr">systemLog:</span> &#123; <span class="hljs-attr">destination:</span> <span class="hljs-string">file</span>, <span class="hljs-attr">path:</span> <span class="hljs-string">/data/mongo/mongos.log</span>, <span class="hljs-attr">logAppend:</span> <span class="hljs-literal">true</span> &#125;<br><span class="hljs-attr">processManagement:</span> &#123; <span class="hljs-attr">fork:</span> <span class="hljs-literal">true</span> &#125;<br><span class="hljs-attr">sharding:</span><br>  <span class="hljs-attr">configDB:</span> <span class="hljs-string">cfgRS/cfg1:27018,cfg2:27018,cfg3:27018</span><br><span class="hljs-attr">security:</span> &#123; <span class="hljs-attr">keyFile:</span> <span class="hljs-string">/etc/mongo-keyfile</span> &#125;<br></code></pre></td></tr></table></figure>
+
+<p>启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">mongos -f /etc/mongos.conf<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-4-通过-mongos-注册分片并分片集合"><a href="#4-4-通过-mongos-注册分片并分片集合" class="headerlink" title="4.4 通过 mongos 注册分片并分片集合"></a>4.4 通过 <code>mongos</code> 注册分片并分片集合</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 连接 mongos</span><br>sh.<span class="hljs-title function_">addShard</span>(<span class="hljs-string">&quot;rs_shard01/shard01-1:27017,shard01-2:27017,shard01-3:27017&quot;</span>)<br>sh.<span class="hljs-title function_">addShard</span>(<span class="hljs-string">&quot;rs_shard02/shard02-1:27017,shard02-2:27017,shard02-3:27017&quot;</span>)<br><br>sh.<span class="hljs-title function_">enableSharding</span>(<span class="hljs-string">&quot;bizdb&quot;</span>)<br>sh.<span class="hljs-title function_">shardCollection</span>(<span class="hljs-string">&quot;bizdb.orders&quot;</span>, &#123; <span class="hljs-attr">userId</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">_id</span>: <span class="hljs-number">1</span> &#125;) <span class="hljs-comment">// 选择合适分片键</span><br>sh.<span class="hljs-title function_">status</span>()<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-常用运维与健康检查"><a href="#5-常用运维与健康检查" class="headerlink" title="5. 常用运维与健康检查"></a>5. 常用运维与健康检查</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 副本集</span><br>rs.<span class="hljs-title function_">status</span>()<br>rs.<span class="hljs-title function_">printReplicationInfo</span>()<br>rs.<span class="hljs-title function_">printSlaveReplicationInfo</span>()<br>db.<span class="hljs-title function_">serverStatus</span>()<br>db.<span class="hljs-title function_">currentOp</span>()<br><br><span class="hljs-comment">// 分片</span><br>sh.<span class="hljs-title function_">status</span>()<br>db.<span class="hljs-title function_">printShardingStatus</span>()<br></code></pre></td></tr></table></figure>
+
+<p>系统层：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">lsof -p &lt;mongod-pid&gt; | <span class="hljs-built_in">wc</span> -l<br>vmstat 1<br>iostat -x 1<br>dstat -tcdnm 1<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-备份与恢复"><a href="#6-备份与恢复" class="headerlink" title="6. 备份与恢复"></a>6. 备份与恢复</h2><h3 id="6-1-逻辑备份（mongodump-mongorestore）"><a href="#6-1-逻辑备份（mongodump-mongorestore）" class="headerlink" title="6.1 逻辑备份（mongodump&#x2F;mongorestore）"></a>6.1 逻辑备份（mongodump&#x2F;mongorestore）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 全量备份（从 Secondary 执行，降压）</span><br>mongodump --host secondary1:27017 -u root -p --authenticationDatabase admin \<br>  --oplog --out /backup/mongo_$(<span class="hljs-built_in">date</span> +%F)<br><br><span class="hljs-comment"># 恢复（可回放 oplog 实现时间点恢复）</span><br>mongorestore -u root -p --authenticationDatabase admin \<br>  --oplogReplay /backup/mongo_2025-08-21<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>提示：如需**时间点恢复（PITR）**到某时间戳，可配合 <code>--oplogFile</code> + 截断 oplog 片段。</p>
+</blockquote>
+<h3 id="6-2-物理-快照备份"><a href="#6-2-物理-快照备份" class="headerlink" title="6.2 物理&#x2F;快照备份"></a>6.2 物理&#x2F;快照备份</h3><ul>
+<li>LVM&#x2F;卷快照或存储快照（确保 <code>fsyncLock</code> 期间一致性）：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs javascript">use admin<br>db.<span class="hljs-title function_">fsyncLock</span>()    <span class="hljs-comment">// 锁写</span><br><span class="hljs-comment">/* 做快照 */</span><br>db.<span class="hljs-title function_">fsyncUnlock</span>()<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>恢复时保证<strong>整库目录原子还原</strong>到相同或兼容版本。</li>
+</ul>
+<h3 id="6-3-备份策略建议"><a href="#6-3-备份策略建议" class="headerlink" title="6.3 备份策略建议"></a>6.3 备份策略建议</h3><ul>
+<li>每日增量（oplog&#x2F;增量日志）、每周全量，保留 ≥ 2–4 周</li>
+<li>将备份推送到异地&#x2F;对象存储，定期做<strong>恢复演练</strong></li>
+</ul>
+<hr>
+<h2 id="7-异常恢复场景与处理手册"><a href="#7-异常恢复场景与处理手册" class="headerlink" title="7. 异常恢复场景与处理手册"></a>7. 异常恢复场景与处理手册</h2><h3 id="7-1-主节点故障（Primary-Down）"><a href="#7-1-主节点故障（Primary-Down）" class="headerlink" title="7.1 主节点故障（Primary Down）"></a>7.1 主节点故障（Primary Down）</h3><p><strong>现象</strong>：写入失败、选举中、延迟升高<br><strong>处理</strong>：</p>
+<ol>
+<li><p>等待自动选举（通常 &lt; 10s）。</p>
+</li>
+<li><p>如需<strong>手动转移主</strong>：在当前 Primary 执行</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">rs.<span class="hljs-title function_">stepDown</span>(<span class="hljs-number">60</span>) <span class="hljs-comment">// 60s 内不再参选</span><br></code></pre></td></tr></table></figure></li>
+<li><p>恢复原主机：检查磁盘&#x2F;网络&#x2F;日志，修复后作为 Secondary 加回。</p>
+</li>
+</ol>
+<h3 id="7-2-节点数据损坏-落后太多"><a href="#7-2-节点数据损坏-落后太多" class="headerlink" title="7.2 节点数据损坏&#x2F;落后太多"></a>7.2 节点数据损坏&#x2F;落后太多</h3><p><strong>现象</strong>：节点无法启动、或 <code>RECOVERING</code> 长时间无法追上<br><strong>处理</strong>：强制重新初始同步（<strong>重新拉全量</strong>）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 在问题节点上：停服务、清空数据目录（只保留密钥与配置）</span><br>systemctl stop mongod<br><span class="hljs-built_in">rm</span> -rf /data/mongo/rs1/db/*<br>systemctl start mongod<br><span class="hljs-comment"># MongoDB 会自动进行 Initial Sync（从其他成员复制）</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>若所有 Secondary 都落后且 oplog 不足以追上：从最近一次全量+增量恢复。</p>
+</blockquote>
+<h3 id="7-3-发生回滚（Rollback）"><a href="#7-3-发生回滚（Rollback）" class="headerlink" title="7.3 发生回滚（Rollback）"></a>7.3 发生回滚（Rollback）</h3><p><strong>触发</strong>：网络分区导致双写，旧主恢复后发现与新主数据分歧<br><strong>处理</strong>：</p>
+<ul>
+<li><p>短期：MongoDB 会将回滚的文档写入 <code>rollback</code> 目录（WiredTiger 日志）。</p>
+</li>
+<li><p>中期：从业务侧确认差异数据，<strong>以新主为准</strong>合并必要数据。</p>
+</li>
+<li><p>预防：</p>
+<ul>
+<li>使用<strong>延迟节点</strong>（Delayed Secondary，如延迟 1–24h）便于人工恢复错误写入；</li>
+<li>业务端启用<strong>幂等写</strong>与<strong>重试写</strong>（writeConcern: “majority”）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-4-磁盘写满"><a href="#7-4-磁盘写满" class="headerlink" title="7.4 磁盘写满"></a>7.4 磁盘写满</h3><p><strong>现象</strong>：<code>WriteConcernFailed</code>、<code>No space left on device</code><br><strong>处理</strong>：</p>
+<ol>
+<li>立即扩容&#x2F;清理：压缩日志、清理历史备份、扩展卷。</li>
+<li><code>wiredTigerEngineRuntimeConfig</code> 不建议随意改。</li>
+<li>恢复后检查：<code>db.serverStatus().wt.cache</code>、<code>df -h</code>、<code>iostat</code>。</li>
+</ol>
+<h3 id="7-5-网络分区-延迟大"><a href="#7-5-网络分区-延迟大" class="headerlink" title="7.5 网络分区&#x2F;延迟大"></a>7.5 网络分区&#x2F;延迟大</h3><ul>
+<li>检查：<code>rs.status()</code> 中 <code>pingMs</code>、系统 <code>ping</code> &#x2F; <code>mtr</code>。</li>
+<li>保证<strong>副本集多数节点</strong>在同一可用区，避免脑裂。</li>
+<li>必要时下调受影响节点 <code>priority: 0</code> 或 <code>votes: 0</code>，以免选为主。</li>
+</ul>
+<h3 id="7-6-配置误改-副本集重配"><a href="#7-6-配置误改-副本集重配" class="headerlink" title="7.6 配置误改&#x2F;副本集重配"></a>7.6 配置误改&#x2F;副本集重配</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript">cfg = rs.<span class="hljs-title function_">conf</span>()<br>cfg.<span class="hljs-property">members</span>[<span class="hljs-number">2</span>].<span class="hljs-property">priority</span> = <span class="hljs-number">0</span><br>rs.<span class="hljs-title function_">reconfig</span>(cfg, &#123;<span class="hljs-attr">force</span>: <span class="hljs-literal">false</span>&#125;)<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>变更期间避免在高峰时段操作。</p>
+</blockquote>
+<h3 id="7-7-分片集群异常"><a href="#7-7-分片集群异常" class="headerlink" title="7.7 分片集群异常"></a>7.7 分片集群异常</h3><p><strong>Balancer 失衡</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript">sh.<span class="hljs-title function_">getBalancerState</span>()<br>sh.<span class="hljs-title function_">startBalancer</span>()<br>sh.<span class="hljs-title function_">isBalancerRunning</span>()<br></code></pre></td></tr></table></figure>
+
+<p><strong>Chunk 卡住迁移</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs javascript">db.<span class="hljs-title function_">currentOp</span>(&#123; <span class="hljs-attr">desc</span>: <span class="hljs-string">&quot;moveChunk&quot;</span> &#125;)<br>sh.<span class="hljs-title function_">abortReshardCollection</span>(<span class="hljs-string">&quot;db.coll&quot;</span>)  <span class="hljs-comment">// 如在重分片中</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>某分片不可达</strong></p>
+<ul>
+<li>暂停写入或将路由权重转移，紧急情况下可对热点集合进行 <code>moveChunk</code> 到健康分片。</li>
+</ul>
+<hr>
+<h2 id="8-性能与参数要点"><a href="#8-性能与参数要点" class="headerlink" title="8. 性能与参数要点"></a>8. 性能与参数要点</h2><ul>
+<li><code>writeConcern: &#123; w: &quot;majority&quot;, j: true &#125;</code>：保证已提交到多数节点且落盘</li>
+<li>适当的索引（前缀&#x2F;复合&#x2F;稀疏&#x2F;TTL）；避免“全表扫描 + 大返回集”</li>
+<li>连接池：驱动层配置 <code>maxPoolSize</code>、<code>waitQueueTimeoutMS</code></li>
+<li>慢查询日志：<code>profile</code> 或 <code>systemLog.component.accessControl.verbosity</code></li>
+<li>大集合分片前评估<strong>分片键基数与热度</strong>（避免单分片热点）</li>
+</ul>
+<hr>
+<h2 id="9-安全与合规"><a href="#9-安全与合规" class="headerlink" title="9. 安全与合规"></a>9. 安全与合规</h2><ul>
+<li>仅对内网开放端口；必要时启用 TLS（x.509）</li>
+<li>角色最小化授权：<code>readWrite</code>、<code>clusterMonitor</code>、<code>backup</code> 等</li>
+<li>审计：<code>auditLog.destination: file</code>（企业版&#x2F;社区替代方案）</li>
+<li>定期轮换 <code>keyFile</code>（需滚动重启）</li>
+</ul>
+<hr>
+<h2 id="10-日常巡检清单（可作定时任务）"><a href="#10-日常巡检清单（可作定时任务）" class="headerlink" title="10. 日常巡检清单（可作定时任务）"></a>10. 日常巡检清单（可作定时任务）</h2><ul>
+<li>副本集与分片健康：<code>rs.status()</code>、<code>sh.status()</code> 无 <code>RECOVERING/ROLLBACK</code></li>
+<li>Oplog 覆盖窗口 ≥ 24–72h（<code>rs.printReplicationInfo()</code>）</li>
+<li>磁盘使用率 &lt; 70%，<code>iowait</code> 正常</li>
+<li>慢查询数量与 P95&#x2F;P99 延迟</li>
+<li>备份成功率 100%，<strong>每月恢复演练一次</strong></li>
+</ul>
+<hr>
+<h2 id="11-常见命令速查"><a href="#11-常见命令速查" class="headerlink" title="11. 常见命令速查"></a>11. 常见命令速查</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 手动切主</span><br>mongo --<span class="hljs-built_in">eval</span> <span class="hljs-string">&#x27;rs.stepDown(60)&#x27;</span><br><br><span class="hljs-comment"># 只读隐藏节点（备份/报表）</span><br>cfg=rs.conf(); cfg.members[2].hidden=<span class="hljs-literal">true</span>; cfg.members[2].priority=0; rs.reconfig(cfg)<br><br><span class="hljs-comment"># 延迟节点（例如延迟 3600 秒）</span><br>cfg=rs.conf(); cfg.members[2].hidden=<span class="hljs-literal">true</span>; cfg.members[2].priority=0; cfg.members[2].slaveDelay=3600; rs.reconfig(cfg)<br><br><span class="hljs-comment"># 添加节点</span><br>rs.add(&#123; host: <span class="hljs-string">&quot;host4:27017&quot;</span>, priority: 0 &#125;)<br><br><span class="hljs-comment"># 移除节点</span><br>rs.remove(<span class="hljs-string">&quot;host4:27017&quot;</span>)<br><br><span class="hljs-comment"># Compact（谨慎，可能阻塞）</span><br>db.runCommand(&#123; compact: <span class="hljs-string">&quot;collName&quot;</span> &#125;)<br><br><span class="hljs-comment"># 统计集合大小与索引</span><br>db.coll.stats()<br>db.coll.getIndexes()<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="12-故障处置模板（可打印）"><a href="#12-故障处置模板（可打印）" class="headerlink" title="12. 故障处置模板（可打印）"></a>12. 故障处置模板（可打印）</h2><p><strong>告警信息</strong>：时间、节点、错误摘要<br><strong>影响范围</strong>：读&#x2F;写&#x2F;业务模块<br><strong>初步判断</strong>：主从&#x2F;磁盘&#x2F;网络&#x2F;参数&#x2F;应用<br><strong>即刻措施</strong>：切主&#x2F;限流&#x2F;只读&#x2F;回滚&#x2F;扩容<br><strong>根因分析</strong>：时间线 + 证据（日志、指标）<br><strong>修复动作</strong>：变更列表与验证<br><strong>预防复发</strong>：参数&#x2F;架构&#x2F;流程&#x2F;演练优化</p>
+<hr>
+<h2 id="13-附：最简本地实验（单机-3-实例）"><a href="#13-附：最简本地实验（单机-3-实例）" class="headerlink" title="13. 附：最简本地实验（单机 3 实例）"></a>13. 附：最简本地实验（单机 3 实例）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">mongod --replSet rs1 --dbpath /data/rs1 --port 27017 --bind_ip 127.0.0.1 --fork --logpath /data/rs1/mongod.log<br>mongod --replSet rs1 --dbpath /data/rs2 --port 27018 --bind_ip 127.0.0.1 --fork --logpath /data/rs2/mongod.log<br>mongod --replSet rs1 --dbpath /data/rs3 --port 27019 --bind_ip 127.0.0.1 --fork --logpath /data/rs3/mongod.log<br><br>mongo --port 27017 --<span class="hljs-built_in">eval</span> <span class="hljs-string">&#x27;</span><br><span class="hljs-string">rs.initiate(&#123;_id:&quot;rs1&quot;,members:[</span><br><span class="hljs-string">&#123;_id:0,host:&quot;127.0.0.1:27017&quot;,priority:2&#125;,</span><br><span class="hljs-string">&#123;_id:1,host:&quot;127.0.0.1:27018&quot;,priority:1&#125;,</span><br><span class="hljs-string">&#123;_id:2,host:&quot;127.0.0.1:27019&quot;,priority:0&#125;]&#125;); rs.status()</span><br><span class="hljs-string">&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+
                 
               </div>
             
